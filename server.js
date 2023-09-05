@@ -1,6 +1,7 @@
 import express from 'express';
 require('dotenv').config();
 import cors from 'cors';
+import initRoutes from './src/routes';
 
 const app = express();
 
@@ -13,9 +14,8 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/', (req, res) => {
-   res.send('Server on....');
-});
+
+initRoutes(app);
 
 const port = process.env.PORT || 8888;
 const listener = app.listen(port, () => {

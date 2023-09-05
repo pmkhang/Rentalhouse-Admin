@@ -2,8 +2,8 @@ import express from 'express';
 
 const router = express.Router();
 
-router.post('/login', (req, res) => {
-   res.status(200).json('OK');
+router.get('/login', (req, res) => {
+   res.send('OK');
 });
 
 export default router;
