@@ -1,11 +1,20 @@
-const generateCode = (length) => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers = '123456789';
+require('dotenv').config();
+
+const generateCode = (value) => {
+  value = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(' ')
+    .join('');
   let code = '';
-  for (let i = 0; i < length; i++) {
-    code += characters.charAt(Math.floor(Math.random() * characters.length));
+  const merge = value + process.env.SECRET_GENERATE;
+  let length = merge.length;
+  for (let i = 0; i < 3; i++) {
+    const index = i === 2 ? Math.floor(merge.length / 2 + length / 2) : Math.floor(length / 2);
+    code += merge.charAt(index);
+    length = index;
   }
-  return `${code}${numbers.charAt(Math.floor(Math.random() * numbers.length))}`;
+  return `${value.charAt(0)}${code}`.toUpperCase();
 };
 
 export default generateCode;

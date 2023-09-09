@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { v4 } from 'uuid';
+import chothuecanho from '../../data/chothuecanho.json';
+import chothuematbang from '../../data/chothuematbang.json';
+import chothuenha from '../../data/chothuenha.json';
 import chothuephongtro from '../../data/chothuephongtro.json';
 import db from '../models';
 import generateCode from '../utils/generateCode';
@@ -9,7 +12,7 @@ dotenv.config();
 
 const insertService = () => {
   const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
-  const dataBody = chothuephongtro.body;
+  const dataBody = chothuecanho.body;
 
   return new Promise(async (resolve, reject) => {
     try {
@@ -19,7 +22,7 @@ const insertService = () => {
         const userID = v4();
         const overviewID = v4();
         const imagesID = v4();
-        const labelCode = generateCode(4);
+        const labelCode = generateCode(item?.header?.class?.classType);
 
         //insert Post
         await db.Post.create({
@@ -52,9 +55,12 @@ const insertService = () => {
         });
 
         //insert Label
-        await db.Label.create({
-          code: labelCode,
-          value: item?.header?.class?.classType,
+        await db.Label.findOrCreate({
+          where: { code: labelCode },
+          defaults: {
+            code: labelCode,
+            value: item?.header?.class?.classType,
+          },
         });
         //insert Overview
         await db.Overview.create({
