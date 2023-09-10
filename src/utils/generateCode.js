@@ -1,4 +1,5 @@
 require('dotenv').config();
+import { v4 } from 'uuid';
 
 const generateCode = (value) => {
   value = value
@@ -9,7 +10,7 @@ const generateCode = (value) => {
   let code = '';
   const merge = value + process.env.SECRET_GENERATE;
   let length = merge.length;
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     const index = i === 2 ? Math.floor(merge.length / 2 + length / 2) : Math.floor(length / 2);
     code += merge.charAt(index);
     length = index;

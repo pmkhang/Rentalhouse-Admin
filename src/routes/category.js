@@ -3,6 +3,6 @@ import * as controller from '../controllers/category';
 
 const router = express.Router();
 
-router.get('/all', controller.getCategories);
+router.get('/all-categoies', controller.getCategories);
 
 export default router;

@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { v4 } from 'uuid';
 import db from '../models';
 import dotenv from 'dotenv';
+import generateCode from '../utils/generateCode';
 dotenv.config();
 
 export const registerService = ({ name, password, phone }) => {
@@ -15,7 +15,7 @@ export const registerService = ({ name, password, phone }) => {
           phone,
           name,
           password: hashPassword(password),
-          id: v4(),
+          id: generateCode(phone + name),
         },
       });
       const token =
@@ -23,7 +23,7 @@ export const registerService = ({ name, password, phone }) => {
         jwt.sign({ id: response[0].id, phone: response[0].phone }, process.env.SECRET_KEY, { expiresIn: '2d' });
       resolve({
         error: token ? 0 : 2,
-        message: token ? 'Register is successfully !' : 'Phone number has been aldready used !',
+        message: token ? 'Register is successfully !' : 'Số điện thoại này đã được sử dụng !',
         token: token || null,
       });
     } catch (error) {
@@ -45,8 +45,12 @@ export const loginService = ({ password, phone }) => {
         isCorrectPassword &&
         jwt.sign({ id: response.id, phone: response.phone }, process.env.SECRET_KEY, { expiresIn: '2d' });
       resolve({
-        error: token ? 0 : 2,
-        message: token ? 'login is successfully !' : response ? 'Password is wrong !' : 'Phone number not found !',
+        error: token ? 0 : 1,
+        message: token
+          ? 'login is successfully !'
+          : response
+          ? 'Bạn đã sai số điện thoại hoặc mật khẩu !'
+          : 'Bạn đã sai số điện thoại hoặc mật khẩu !',
         token: token || null,
       });
     } catch (error) {

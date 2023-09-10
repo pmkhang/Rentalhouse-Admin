@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
 import { v4 } from 'uuid';
 import chothuecanho from '../../data/chothuecanho.json';
 import chothuematbang from '../../data/chothuematbang.json';
@@ -8,8 +7,6 @@ import chothuephongtro from '../../data/chothuephongtro.json';
 import db from '../models';
 import generateCode from '../utils/generateCode';
 
-dotenv.config();
-
 const insertService = () => {
   const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
   const dataBody = chothuecanho.body;
@@ -17,13 +14,15 @@ const insertService = () => {
   return new Promise(async (resolve, reject) => {
     try {
       dataBody.forEach(async (item) => {
-        const postID = v4();
-        const attributesID = v4();
-        const userID = v4();
-        const overviewID = v4();
-        const imagesID = v4();
+        const postID = generateCode(v4() + imagesID);
+        const attributesID = generateCode(v4() + v4());
+        const userID = generateCode(
+          item?.contact?.content.find((i) => i.name === 'Điện thoại:')?.content +
+            item?.contact?.content.find((i) => i.name === 'Liên hệ:')?.content,
+        );
+        const overviewID = generateCode(v4() + v4() + v4());
+        const imagesID = generateCode(v4() + v4() + v4() + v4());
         const labelCode = generateCode(item?.header?.class?.classType);
-
         //insert Post
         await db.Post.create({
           id: postID,
@@ -32,7 +31,7 @@ const insertService = () => {
           labelCode: labelCode,
           address: item?.header?.address,
           attributesID: attributesID,
-          categoryCode: 'chothuephongtro',
+          categoryCode: 'chothuecanho',
           desc: JSON.stringify(item?.mainContent?.content),
           userID: userID,
           overviewID: overviewID,
@@ -73,13 +72,15 @@ const insertService = () => {
           created: item?.overview?.content.find((i) => i.name === 'Ngày đăng:')?.content,
           expired: item?.overview?.content.find((i) => i.name === 'Ngày hết hạn:')?.content,
         });
-        //insert User
-        await db.User.create({
-          id: userID,
-          name: item?.contact?.content.find((i) => i.name === 'Liên hệ:')?.content,
-          password: hashPassword('123456'),
-          phone: item?.contact?.content.find((i) => i.name === 'Điện thoại:')?.content,
-          zalo: item?.contact?.content.find((i) => i.name === 'Zalo')?.content,
+        await db.User.findOrCreate({
+          where: { id: userID },
+          defaults: {
+            id: userID,
+            name: item?.contact?.content.find((i) => i.name === 'Liên hệ:')?.content,
+            password: hashPassword('123456'),
+            phone: item?.contact?.content.find((i) => i.name === 'Điện thoại:')?.content,
+            zalo: item?.contact?.content.find((i) => i.name === 'Zalo')?.content,
+          },
         });
       });
       console.log('Done.');
