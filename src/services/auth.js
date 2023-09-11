@@ -59,3 +59,5 @@ export const loginService = ({ password, phone }) => {
     }
   });
 };
+
+//TODO: Logout

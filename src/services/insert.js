@@ -14,7 +14,7 @@ const insertService = () => {
   return new Promise(async (resolve, reject) => {
     try {
       dataBody.forEach(async (item) => {
-        const postID = generateCode(v4() + imagesID);
+        const postID = generateCode(v4());
         const attributesID = generateCode(v4() + v4());
         const userID = generateCode(
           item?.contact?.content.find((i) => i.name === 'Điện thoại:')?.content +
@@ -22,7 +22,7 @@ const insertService = () => {
         );
         const overviewID = generateCode(v4() + v4() + v4());
         const imagesID = generateCode(v4() + v4() + v4() + v4());
-        const labelCode = generateCode(item?.header?.class?.classType);
+        const labelCode = generateCode('chothuecanho');
         //insert Post
         await db.Post.create({
           id: postID,
