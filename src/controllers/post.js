@@ -12,15 +12,30 @@ export const getPosts = async (req, res) => {
   }
 };
 
+// export const getPostsLimit = async (req, res) => {
+//   const { page, query } = req.query;
+//   console.log(query);
+//   try {
+//     const response = await postService.getPostsLimitService(page, query);
+//     return res.status(200).json(response);
+//   } catch (error) {
+//     return res.status(500).json({
+//       error: -1,
+//       message: 'Failed at post controller: ' + error,
+//     });
+//   }
+// };
+
 export const getPostsLimit = async (req, res) => {
-  const { page } = req.query;
+  const { page, priceNumber, acreageNumber, ...query } = req.query;
+  console.log(page, priceNumber, acreageNumber, query);
   try {
-    const response = await postService.getPostsLimitService(page);
+    const response = await postService.getPostsLimitService(page, query, { priceNumber, acreageNumber });
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({
-      error: -1,
-      message: 'Failed at post controller: ' + error,
+      err: -1,
+      msg: 'Failed at post controller: ' + error,
     });
   }
 };

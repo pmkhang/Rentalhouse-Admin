@@ -6,15 +6,20 @@ import chothuenha from '../../data/chothuenha.json';
 import chothuephongtro from '../../data/chothuephongtro.json';
 import db from '../models';
 import generateCode from '../utils/generateCode';
+import { dataAcreage, dataPrice } from '../utils/data';
+import { getNumberFromSting } from '../utils/common';
+
+//npx sequelize-cli db:migrate:undo:all
+//npx sequelize-cli db:migrate
 
 const insertService = () => {
   const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
-  const dataBody = chothuecanho.body;
+  const dataBody = chothuenha.body;
 
   return new Promise(async (resolve, reject) => {
     try {
       dataBody.forEach(async (item) => {
-        const postID = generateCode(v4());
+        const postID = generateCode(v4() + userID + attributesID);
         const attributesID = generateCode(v4() + v4());
         const userID = generateCode(
           item?.contact?.content.find((i) => i.name === 'Điện thoại:')?.content +
@@ -22,7 +27,10 @@ const insertService = () => {
         );
         const overviewID = generateCode(v4() + v4() + v4());
         const imagesID = generateCode(v4() + v4() + v4() + v4());
-        const labelCode = generateCode('chothuecanho');
+        const labelCode = generateCode(item?.header?.class?.classType);
+        const currentAcreage = getNumberFromSting(item?.header?.attribute?.acreage);
+        const currentPrices = getNumberFromSting(item?.header?.attribute?.price);
+
         //insert Post
         await db.Post.create({
           id: postID,
@@ -31,12 +39,23 @@ const insertService = () => {
           labelCode: labelCode,
           address: item?.header?.address,
           attributesID: attributesID,
-          categoryCode: 'chothuecanho',
+          categoryCode: 'chothuenha',
           desc: JSON.stringify(item?.mainContent?.content),
           userID: userID,
           overviewID: overviewID,
           imagesID: imagesID,
+          priceCode: dataPrice.find((i) => i.max >= currentPrices && i.min <= currentPrices)?.code,
+          acreageCode: dataAcreage.find((i) => i.max >= currentAcreage && i.min <= currentAcreage)?.code,
         });
+
+        // await db.Price.create({
+        //   code,
+        //   value,
+        // });
+        // await db.Acreage.create({
+        //   code,
+        //   value,
+        // });
 
         //insert Attribute
         await db.Attribute.create({
@@ -93,3 +112,26 @@ const insertService = () => {
 };
 
 export default insertService;
+
+export const createPricesAndAcreage = () =>
+  new Promise((resolve, reject) => {
+    try {
+      dataPrice.forEach(async (i) => {
+        await db.Price.create({
+          code: i.code,
+          value: i.value,
+        });
+      });
+
+      dataAcreage.forEach(async (i) => {
+        await db.Acreage.create({
+          code: i.code,
+          value: i.value,
+        });
+      });
+      resolve('Ok Price');
+    } catch (error) {
+      console.log('create error: ', error);
+      reject(error);
+    }
+  });

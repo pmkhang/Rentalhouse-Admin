@@ -1,4 +1,4 @@
-import insertService from '../services/insert';
+import insertService, { createPricesAndAcreage } from '../services/insert';
 
 const insert = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ const insert = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: -1,
-      message: 'Fail at authinsert controller: ' + error,
+      message: 'Fail at insert controller: ' + error,
     });
   }
 };
