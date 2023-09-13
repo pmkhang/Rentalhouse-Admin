@@ -87,7 +87,7 @@ export const getPostsLimitService = (page, query, { priceNumber, areaNumber }) =
   new Promise(async (resolve, reject) => {
     try {
       const idSet = new Set();
-      let offset = !page || +page <= 1 ? 0 : +page - 1;
+      const offset = !page || +page <= 1 ? 0 : +page - 1;
       const queries = { ...query };
       if (priceNumber) queries.priceNumber = { [Op.between]: priceNumber };
       if (areaNumber) queries.areaNumber = { [Op.between]: areaNumber };

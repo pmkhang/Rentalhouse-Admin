@@ -14,12 +14,12 @@ import { getNumberFromSting } from '../utils/common';
 
 const insertService = () => {
   const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
-  const dataBody = chothuenha.body;
+  const dataBody = chothuecanho.body;
 
   return new Promise(async (resolve, reject) => {
     try {
       dataBody.forEach(async (item) => {
-        const postID = generateCode(v4() + userID + attributesID);
+        const postID = generateCode(v4() + attributesID);
         const attributesID = generateCode(v4() + v4());
         const userID = generateCode(
           item?.contact?.content.find((i) => i.name === 'Điện thoại:')?.content +
@@ -39,13 +39,13 @@ const insertService = () => {
           labelCode: labelCode,
           address: item?.header?.address,
           attributesID: attributesID,
-          categoryCode: 'chothuenha',
+          categoryCode: 'chothuecanho',
           desc: JSON.stringify(item?.mainContent?.content),
           userID: userID,
           overviewID: overviewID,
           imagesID: imagesID,
-          priceCode: dataPrice.find((i) => i.max >= currentPrices && i.min <= currentPrices)?.code,
-          acreageCode: dataAcreage.find((i) => i.max >= currentAcreage && i.min <= currentAcreage)?.code,
+          priceCode: dataPrice.find((i) => i.max > currentPrices && i.min <= currentPrices)?.code,
+          acreageCode: dataAcreage.find((i) => i.max > currentAcreage && i.min <= currentAcreage)?.code,
         });
 
         // await db.Price.create({

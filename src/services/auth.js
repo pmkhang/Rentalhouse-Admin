@@ -52,6 +52,7 @@ export const loginService = ({ password, phone }) => {
           ? 'Bạn đã sai số điện thoại hoặc mật khẩu !'
           : 'Bạn đã sai số điện thoại hoặc mật khẩu !',
         token: token || null,
+        id: response.id,
       });
     } catch (error) {
       console.log('Error loginService: ', error);

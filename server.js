@@ -6,7 +6,6 @@ import connectDatabase from './src/config/connectDatabase';
 
 
 
-
 const app = express();
 app.use(
   cors({
