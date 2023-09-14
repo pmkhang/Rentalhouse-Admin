@@ -125,3 +125,39 @@ export const getPostsLimitService = (page, query, { priceNumber, areaNumber }) =
       reject(error);
     }
   });
+
+export const getNewPostsService = () =>
+  new Promise(async (resolve, reject) => {
+    const idSet = new Set();
+
+    try {
+      const response = await db.Post.findAll({
+        raw: true,
+        nest: true,
+        offset: 0,
+        order: [['createdAt','DESC']],
+        limit: +process.env.LIMIT,
+        include: [
+          { model: db.Image, as: 'images', attributes: ['image'] },
+          { model: db.Attribute, as: 'attributes', attributes: ['price'] },
+        ],
+        attributes: ['id', 'title', 'star', 'createdAt'],
+      });
+
+      const filteredResponse = response.filter((post) => {
+        if (!idSet.has(post.id)) {
+          idSet.add(post.id);
+          return true;
+        }
+        return false;
+      });
+
+      resolve({
+        error: filteredResponse.length > 0 ? 0 : 1,
+        message: filteredResponse.length > 0 ? 'Ok' : 'No unique posts found',
+        response: filteredResponse,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
