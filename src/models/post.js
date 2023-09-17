@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       star: DataTypes.STRING,
       labelCode: DataTypes.STRING,
+      provinceCode: DataTypes.STRING,
       address: DataTypes.STRING,
       attributesID: DataTypes.STRING,
       categoryCode: DataTypes.STRING,
@@ -28,8 +29,9 @@ module.exports = (sequelize, DataTypes) => {
       overviewID: DataTypes.STRING,
       imagesID: DataTypes.STRING,
       priceCode: DataTypes.STRING,
+      priceNumber: DataTypes.DECIMAL(10, 2),
       acreageCode: DataTypes.STRING,
-      provinceCode: DataTypes.STRING,
+      acreageNumber: DataTypes.INTEGER,
       //TODO: isDisable
       //TODO: modifiedBy
     },

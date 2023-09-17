@@ -79,6 +79,8 @@ const insertService = () => {
             priceCode: dataPrice.find((i) => i.max > currentPrices && i.min <= currentPrices)?.code,
             acreageCode: dataAcreage.find((i) => i.max > currentAcreage && i.min <= currentAcreage)?.code,
             provinceCode: provinceCode,
+            priceNumber: +currentPrices,
+            acreageNumber: +currentAcreage,
           });
 
           //insert Attribute

@@ -1,4 +1,5 @@
 import db from '../models';
+import { Op } from 'sequelize';
 require('dotenv').config();
 
 export const getPostsService = () =>
@@ -83,14 +84,14 @@ export const getPostsService = () =>
 //     }
 //   });
 
-export const getPostsLimitService = (page, query, { priceNumber, areaNumber }) =>
+export const getPostsLimitService = (page, query, { priceNumber, acreageNumber }) =>
   new Promise(async (resolve, reject) => {
     try {
       const idSet = new Set();
       const offset = !page || +page <= 1 ? 0 : +page - 1;
       const queries = { ...query };
       if (priceNumber) queries.priceNumber = { [Op.between]: priceNumber };
-      if (areaNumber) queries.areaNumber = { [Op.between]: areaNumber };
+      if (acreageNumber) queries.acreageNumber = { [Op.between]: acreageNumber };
       const response = await db.Post.findAndCountAll({
         where: queries,
         raw: true,

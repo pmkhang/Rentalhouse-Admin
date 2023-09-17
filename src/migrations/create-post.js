@@ -48,6 +48,12 @@ module.exports = {
       provinceCode: {
         type: Sequelize.STRING,
       },
+      priceNumber: {
+        type: Sequelize.DECIMAL(10, 2),
+      },
+      acreageNumber: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
