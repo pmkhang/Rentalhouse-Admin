@@ -28,7 +28,6 @@ export const getPosts = async (req, res) => {
 
 export const getPostsLimit = async (req, res) => {
   const { page, priceNumber, acreageNumber, ...query } = req.query;
-  console.log(page, priceNumber, acreageNumber, query);
   try {
     const response = await postService.getPostsLimitService(page, query, { priceNumber, acreageNumber });
     return res.status(200).json(response);

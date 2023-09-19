@@ -1,5 +1,4 @@
 require('dotenv').config();
-import { v4 } from 'uuid';
 
 const generateCode = (value) => {
   value = value
