@@ -50,3 +50,23 @@ export const getNewPosts = async (req, res) => {
     });
   }
 };
+
+export const createNewPost = async (req, res) => {
+  try {
+    const { categoryCode, title, priceNumber, acreageNumber, label } = req.body;
+    const { id } = req.user;
+    if (!categoryCode || !id || !title || !priceNumber || !acreageNumber || !label) {
+      return res.status(400).json({
+        error: 1,
+        message: 'Missing inputs',
+      });
+    }
+    const response = await postService.createNewPostService(req.body, id);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      error: -1,
+      message: 'Failed at createNewPost controller: ' + error.message,
+    });
+  }
+};

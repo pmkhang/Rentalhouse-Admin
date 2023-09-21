@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+
 const generateCode = (value) => {
   value = value
     .normalize('NFD')
