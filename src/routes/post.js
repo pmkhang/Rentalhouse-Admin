@@ -10,5 +10,7 @@ router.get('/all-new-posts', postController.getNewPosts);
 
 router.use(verifyToken);
 router.post('/create-new', postController.createNewPost);
+router.get('/user-posts', postController.getUserPosts);
+router.put('/update-user-post', postController.updateUserPosts);
 
 export default router;

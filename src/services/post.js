@@ -3,6 +3,8 @@ import db from '../models';
 import { Op } from 'sequelize';
 import generateCode from '../utils/generateCode';
 import moment from 'moment';
+import generateDate from '../utils/generateDate';
+
 require('dotenv').config();
 
 export const getPostsService = () =>
@@ -167,6 +169,50 @@ export const getNewPostsService = () =>
     }
   });
 
+export const getUserPostsService = (page, id, query) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const idSet = new Set();
+      const offset = !page || +page <= 1 ? 0 : +page - 1;
+      const queries = { ...query, userID: id };
+      const response = await db.Post.findAndCountAll({
+        where: queries,
+        raw: true,
+        nest: true,
+        offset: offset * +process.env.LIMIT,
+        order: [['createdAt', 'DESC']],
+        limit: +process.env.LIMIT,
+        include: [
+          { model: db.Image, as: 'images', attributes: ['image'] },
+          { model: db.Attribute, as: 'attributes' },
+          { model: db.Overview, as: 'overviews' },
+          { model: db.Label, as: 'labels' },
+        ],
+        // attributes: ['id', 'title', 'star', 'address', 'desc'],
+      });
+
+      const { count, rows } = response;
+      const filteredResponse = rows.filter((post) => {
+        if (!idSet.has(post.id)) {
+          idSet.add(post.id);
+          return true;
+        }
+        return false;
+      });
+
+      resolve({
+        error: filteredResponse.length > 0 ? 0 : 1,
+        message: filteredResponse.length > 0 ? 'Ok' : 'No unique posts found',
+        response: {
+          count: count,
+          rows: filteredResponse,
+        },
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const createNewPostService = (body, id) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -177,7 +223,7 @@ export const createNewPostService = (body, id) =>
       const labelCode = generateCode(body?.label.trim());
       const hashtag = generateCode(v4() + v4() + v4() + v4() + v4());
       const province = body?.provinceName?.replace(/thành phố|Thành phố|Thành Phố|tỉnh|Tỉnh/g, '').trim();
-      const currentDate = new Date();
+      const currentDate = generateDate();
 
       await db.Post.create({
         id: postID,
@@ -220,8 +266,8 @@ export const createNewPostService = (body, id) =>
         type: body?.categoryName,
         target: body?.target,
         bonus: 'Tin thường',
-        created: moment(currentDate).format('DD/MM/YYYY'),
-        expired: moment(moment(currentDate).format('DD/MM/YYYY'), 'DD/MM/YYYY').add(30, 'days').format('DD/MM/YYYY'),
+        created: currentDate?.today,
+        expired: currentDate?.expireDay,
       });
 
       await db.Province.findOrCreate({
@@ -246,5 +292,89 @@ export const createNewPostService = (body, id) =>
     } catch (error) {
       console.log('Create Post Fail: ', error);
       reject(error);
+    }
+  });
+
+export const updateUserPostsService = ({ postID, overviewID, imagesID, attributesID, ...body }) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const labelCode = generateCode(body?.label.trim());
+      const province = body?.provinceName?.replace(/thành phố|Thành phố|Thành Phố|tỉnh|Tỉnh/g, '').trim();
+
+      await db.Post.update(
+        {
+          title: body?.title,
+          star: body?.star,
+          labelCode: labelCode,
+          address: body?.address,
+          categoryCode: body?.categoryCode,
+          desc: JSON.stringify(body?.desc),
+          priceCode: body?.priceCode,
+          acreageCode: body?.acreageCode,
+          provinceCode: generateCode(province),
+          priceNumber: body?.priceNumber,
+          acreageNumber: body?.acreageNumber,
+        },
+        {
+          where: { id: postID },
+        },
+      );
+
+      await db.Attribute.update(
+        {
+          price: `${
+            body?.priceNumber >= 1 ? body?.priceNumber + ' triệu/tháng' : body?.priceNumber * 10 ** 6 + ' đồng/tháng'
+          }`,
+          acreage: body?.acreageNumber + 'm2',
+        },
+        {
+          where: { id: attributesID },
+        },
+      );
+
+      await db.Image.create(
+        {
+          image: body?.images,
+        },
+        {
+          where: { id: imagesID },
+        },
+      );
+
+      await db.Overview.create(
+        {
+          area: body?.label,
+          type: body?.categoryName,
+          target: body?.target,
+        },
+        {
+          where: { id: overviewID },
+        },
+      );
+
+      await db.Province.findOrCreate({
+        where: { code: generateCode(province) },
+        defaults: {
+          code: generateCode(province),
+          value: province,
+        },
+      });
+
+      await db.Label.findOrCreate({
+        where: { code: labelCode },
+        defaults: {
+          code: labelCode,
+          value: body?.label,
+        },
+      });
+
+      resolve({
+        error: 0,
+        message: 'Updated',
+        response: response,
+      });
+    } catch (error) {
+      reject(error);
+      console.log('updateUserPostsService error: ', error);
     }
   });
