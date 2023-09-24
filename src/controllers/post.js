@@ -103,7 +103,26 @@ export const updateUserPosts = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       err: -1,
-      msg: 'Failed at getUserPosts controller: ' + error,
+      msg: 'Failed at updateUserPosts controller: ' + error,
+    });
+  }
+};
+
+export const deleteUserPost = async (req, res) => {
+  const { postID, attributesID, overviewID, labelCode, imagesID } = req.query;
+  const { id } = req.user;
+  try {
+    if (!postID || !id || !attributesID || !overviewID || !labelCode || !imagesID)
+      return res.status(400).json({
+        error: 1,
+        message: 'Missing inputs',
+      });
+    const response = await postService.delUserPostService(postID, attributesID, overviewID, labelCode, imagesID);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      err: -1,
+      msg: 'Failed at deleteUserPost controller: ' + error,
     });
   }
 };

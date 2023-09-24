@@ -22,3 +22,27 @@ export const getUserByIDService = (id) =>
       reject(error);
     }
   });
+
+export const updateUserByIDService = ({ name, zalo, fbUrl, avatar }, id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      await db.User.update(
+        {
+          name,
+          zalo: zalo || '',
+          fbUrl: fbUrl || '',
+          avatar: avatar || '',
+        },
+        {
+          where: { id },
+        },
+      );
+      resolve({
+        error: 0,
+        message: 'Updated successfully',
+      });
+    } catch (error) {
+      console.log('updateUserByIDService Service Error: ', error);
+      reject(error);
+    }
+  });

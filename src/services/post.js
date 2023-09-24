@@ -332,7 +332,7 @@ export const updateUserPostsService = ({ postID, overviewID, imagesID, attribute
         },
       );
 
-      await db.Image.create(
+      await db.Image.update(
         {
           image: body?.images,
         },
@@ -341,7 +341,7 @@ export const updateUserPostsService = ({ postID, overviewID, imagesID, attribute
         },
       );
 
-      await db.Overview.create(
+      await db.Overview.update(
         {
           area: body?.label,
           type: body?.categoryName,
@@ -371,10 +371,37 @@ export const updateUserPostsService = ({ postID, overviewID, imagesID, attribute
       resolve({
         error: 0,
         message: 'Updated',
-        response: response,
       });
     } catch (error) {
       reject(error);
       console.log('updateUserPostsService error: ', error);
+    }
+  });
+
+export const delUserPostService = (postID, attributesID, overviewID, labelCode, imagesID) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      await db.Post.destroy({
+        where: { id: postID },
+      });
+      await db.Attribute.destroy({
+        where: { id: attributesID },
+      });
+      await db.Overview.destroy({
+        where: { id: overviewID },
+      });
+      await db.Label.destroy({
+        where: { code: labelCode },
+      });
+      await db.Image.destroy({
+        where: { id: imagesID },
+      });
+      resolve({
+        error: 0,
+        message: 'Deleted successfully',
+      });
+    } catch (error) {
+      reject(error);
+      console.log('delUserPostService error: ', error);
     }
   });

@@ -9,5 +9,6 @@ const router = express.Router();
 
 router.use(verifyToken);
 router.get('/user-data', controller1.getUserByID);
+router.put('/update-user-data', controller1.updateUserByID);
 
 export default router;
