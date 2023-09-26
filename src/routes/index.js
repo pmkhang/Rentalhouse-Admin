@@ -9,7 +9,7 @@ import provinceRouter from './province';
 
 const initRoutes = (app) => {
   app.use('/api/v1/auth', authRouter);
-  app.use('/api/v1/insert', insertRouter);
+  // app.use('/api/v1/insert', insertRouter);
   app.use('/api/v1/category', categoryRouter);
   app.use('/api/v1/post', postRouter);
   app.use('/api/v1/user', userRouter);

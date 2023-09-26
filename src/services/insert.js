@@ -12,6 +12,37 @@ import { getNumberFromSting } from '../utils/common';
 //npx sequelize-cli db:migrate:undo:all
 //npx sequelize-cli db:migrate
 
+const categories = [
+  {
+    code: 'chothuecanho',
+    value: 'Cho thuê căn hộ',
+    header: 'Cho Thuê Căn Hộ Chung Cư, Giá Rẻ, View Đẹp, Mới Nhất 2023',
+    subheader:
+      'Cho thuê căn hộ - Kênh đăng tin cho thuê căn hộ số 1: giá rẻ, chính chủ, đầy đủ tiện nghi. Cho thuê chung cư với nhiều mức giá, diện tích cho thuê khác nhau.',
+  },
+  {
+    code: 'chothuematbang',
+    value: 'Cho thuê mặt bằng',
+    header: 'Cho Thuê Mặt Bằng, Văn Phòng Kinh Doanh, Giá Rẻ, Mới Nhất 2023',
+    subheader:
+      'Có 2.851 tin đăng cho thuê mặt bằng, văn phòng kinh doanh. Giá rẻ, gần chợ, trường học, tiện mở quán ăn, cafe. Đăng tin mặt bằng, văn phòng hiệu quả tại RentalHouse',
+  },
+  {
+    code: 'chothuenha',
+    value: 'Cho thuê nhà',
+    header: 'Cho Thuê Nhà Nguyên Căn, Giá Rẻ, Chính Chủ, Mới Nhất 2023',
+    subheader:
+      'Cho thuê nhà nguyên căn - Kênh đăng tin cho thuê nhà số 1: giá rẻ, chính chủ, miễn trung gian, đầy đủ tiện nghi, mức giá, diện tích cho thuê khác nhau.',
+  },
+  {
+    code: 'chothuephongtro',
+    value: 'Cho thuê phòng trọ',
+    header: 'Cho Thuê Phòng Trọ, Giá Rẻ, Tiện Nghi, Mới Nhất 2023',
+    subheader:
+      'Cho thuê phòng trọ - Kênh thông tin số 1 về phòng trọ giá rẻ, phòng trọ sinh viên, phòng trọ cao cấp mới nhất năm 2023. Tất cả nhà trọ cho thuê giá tốt nhất tại Việt Nam.',
+  },
+];
+
 const insertService = () => {
   const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
   // const dataBody = chothuephongtro.body;
@@ -37,7 +68,19 @@ const insertService = () => {
     try {
       const provinceCodes = [];
       const labelCodes = [];
-
+      await db.Category.bulkCreate(categories);
+      dataPrice.forEach(async (i) => {
+        await db.Price.create({
+          code: i.code,
+          value: i.value,
+        });
+      });
+      dataAcreage.forEach(async (i) => {
+        await db.Acreage.create({
+          code: i.code,
+          value: i.value,
+        });
+      });
       dataBody.forEach((cate) => {
         cate.body.forEach(async (item) => {
           const postID = generateCode(v4() + attributesID);
@@ -147,25 +190,25 @@ const insertService = () => {
 
 export default insertService;
 
-export const createPricesAndAcreage = () =>
-  new Promise((resolve, reject) => {
-    try {
-      dataPrice.forEach(async (i) => {
-        await db.Price.create({
-          code: i.code,
-          value: i.value,
-        });
-      });
+// export const createPricesAndAcreage = () =>
+//   new Promise((resolve, reject) => {
+//     try {
+//       dataPrice.forEach(async (i) => {
+//         await db.Price.create({
+//           code: i.code,
+//           value: i.value,
+//         });
+//       });
 
-      dataAcreage.forEach(async (i) => {
-        await db.Acreage.create({
-          code: i.code,
-          value: i.value,
-        });
-      });
-      resolve('Ok Price');
-    } catch (error) {
-      console.log('create error: ', error);
-      reject(error);
-    }
-  });
+//       dataAcreage.forEach(async (i) => {
+//         await db.Acreage.create({
+//           code: i.code,
+//           value: i.value,
+//         });
+//       });
+//       resolve('Ok Price');
+//     } catch (error) {
+//       console.log('create error: ', error);
+//       reject(error);
+//     }
+//   });
