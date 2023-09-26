@@ -1,24 +1,29 @@
 {
-   "development": {
-      "username": "root",
-      "password": null,
-      "database": "pmkhang",
-      "host": "127.0.0.1",
-      "dialect": "mysql",
-      "logging": false
-   },
-   "test": {
-      "username": "root",
-      "password": null,
-      "database": "database_test",
-      "host": "127.0.0.1",
-      "dialect": "mysql"
-   },
-   "production": {
-      "username": "root",
-      "password": null,
-      "database": "database_production",
-      "host": "127.0.0.1",
-      "dialect": "mysql"
-   }
+  "development": {
+    "username": "db_rentalhouse_user",
+    "password": "4tjR7j7SefuI47RUHa2duLNy4tkTayaV",
+    "database": "db_rentalhouse",
+    "host": "dpg-ck9bramgtj9c73br7omg-a.singapore-postgres.render.com",
+    "dialect": "postgres",
+    "logging": false,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "production": {
+    "username": "db_rentalhouse_user",
+    "password": "4tjR7j7SefuI47RUHa2duLNy4tkTayaV",
+    "database": "db_rentalhouse",
+    "host": "dpg-ck9bramgtj9c73br7omg-a.singapore-postgres.render.com",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
 }
