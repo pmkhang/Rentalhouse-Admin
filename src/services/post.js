@@ -89,28 +89,31 @@ export const getPostsService = () =>
 //     }
 //   });
 
-export const getPostsLimitService = (page, query, { priceNumber, acreageNumber }) =>
+export const getPostsLimitService = (page, { limitPost, order, ...query }, { priceNumber, acreageNumber }) =>
   new Promise(async (resolve, reject) => {
     try {
       const idSet = new Set();
       const offset = !page || +page <= 1 ? 0 : +page - 1;
       const queries = { ...query };
-      if (priceNumber) queries.priceNumber = { [Op.between]: priceNumber };
-      if (acreageNumber) queries.acreageNumber = { [Op.between]: acreageNumber };
+      const limit = +limitPost || +process.env.LIMIT;
+      queries.limit = limit;
+      if (priceNumber) query.priceNumber = { [Op.between]: priceNumber };
+      if (acreageNumber) query.acreageNumber = { [Op.between]: acreageNumber };
+      if (order) queries.order = [order];
       const response = await db.Post.findAndCountAll({
-        where: queries,
+        where: query,
         raw: true,
         nest: true,
-        offset: offset * +process.env.LIMIT,
-        order: [['createdAt', 'DESC']],
-        limit: +process.env.LIMIT,
+        offset: offset * limit,
+        ...queries,
         include: [
           { model: db.Image, as: 'images', attributes: ['image'] },
           { model: db.Attribute, as: 'attributes', attributes: ['price', 'acreage', 'published', 'hashtag'] },
-          { model: db.User, as: 'users', attributes: ['name', 'phone', 'zalo'] },
+          { model: db.User, as: 'users', attributes: ['name', 'phone', 'zalo', 'avatar'] },
           { model: db.Label, as: 'labels', attributes: ['code', 'value'] },
+          { model: db.Overview, as: 'overviews' },
         ],
-        attributes: ['id', 'title', 'star', 'address', 'desc'],
+        attributes: ['id', 'title', 'star', 'address', 'desc', 'createdAt'],
       });
       const { count, rows } = response;
       const filteredResponse = rows.filter((post) => {
